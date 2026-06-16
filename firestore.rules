@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // [수정됨] reports(진단 결과)는 누구나 읽을 수 있게 허용 (쓰기는 로그인 필요)
+    match /reports/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // [New] Public access for posts
+    match /posts/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // 그 외 사용자 정보 등은 로그인한 사람만 접근 가능 (보안 유지)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

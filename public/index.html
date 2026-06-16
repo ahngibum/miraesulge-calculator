@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <link rel="apple-touch-icon" href="icon-192.png"> 
+    <link rel="icon" type="image/png" href="icon-192.png">
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js')
+            .then((reg) => console.log('서비스 워커 등록 성공:', reg.scope))
+            .catch((err) => console.log('서비스 워커 등록 실패:', err));
+        });
+      }
+    </script>
+
+    <script>
+        (function() {
+            var userAgent = navigator.userAgent.toLowerCase();
+            var targetUrl = window.location.href;
+            if (userAgent.includes('kakaotalk')) {
+                if (userAgent.includes('android')) {
+                    location.href = 'intent://' + targetUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+                    location.href = 'kakaotalk://web/openExternalApp?url=' + encodeURIComponent(targetUrl);
+                }
+            }
+        })();
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1T5GDGTWV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z1T5GDGTWV'); 
+    </script>
+
+    <meta name="google-site-verification" content="cWFxIon7qS5Gk8MmrZbPi5_3BgRViz_LARaZF3qp_Xo" />
+
+    <title>AI 노후 설계 연구소 - 무료 노후 준비 시뮬레이션 및 은퇴 자금 진단</title>
+    <meta name="description" content="28년차 재무 전문가가 설계한 AI 노후 설계 시뮬레이션. 국민연금, 부동산 자산, 건보료까지 반영한 8가지 은퇴 시나리오를 무료로 진단하세요.">
+    <meta name="keywords" content="노후준비, 은퇴설계, AI 자산관리, 노후자금계산기, 국민연금예상수령액, 주택연금, 노후준비계산기, 개인연금, 노령연금, 재테크, 퇴직연금, 연금, 연금저축, 국민연금, 퇴직  ">
+    
+    <link rel="canonical" href="https://www.myaicfo.co.kr">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.myaicfo.co.kr">
+    <meta property="og:title" content="AI 노후설계 연구소 - 내 노후자산 무료 진단">
+    <meta property="og:description" content="28년차 재무 전문가의 알고리즘으로 당신의 노후 생존 가능성을 진단합니다.">
+    <meta property="og:image" content="https://www.myaicfo.co.kr/header_bg.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "AI Retirement Simulator",
+      "operatingSystem": "Web",
+      "applicationCategory": "FinanceApplication",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+      "description": "AI-based retirement planning and pension calculator."
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { 
+            --primary-color: #1a73e8; 
+            --primary-dark: #1557b0; 
+            --text-dark: #202124; 
+            --text-gray: #5f6368;
+            --bg-color: #f8f9fa; 
+            --footer-bg: #232323; 
+            --footer-text: #999; 
+        }
+        body { 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color); 
+            margin: 0; padding: 0; color: var(--text-dark); line-height: 1.6;
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        
+        .navbar { 
+            background-color: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); width: 100%; padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-container {
+            max-width: 1000px; margin: 0 auto; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px 20px; box-sizing: border-box;
+        }
+
+        .logo { font-size: 1.3rem; font-weight: 900; color: var(--primary-color); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .beta-badge { display: inline-block; font-size: 0.75rem; background-color: #ffd600; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 800; vertical-align: middle; box-shadow: 0 1px 2px rgba(0,0,0,0.1); white-space: nowrap; }
+
+        .nav-right-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #google_translate_element { 
+            line-height: 0; 
+        }
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .goog-te-gadget-icon, .goog-te-menu-value span { display: none !important; }
+        .goog-te-menu-value:before {
+            content: "\f0ac"; /* FontAwesome Globe Icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #5f6368;
+        }
+        .goog-te-menu-value img { display: none !important; }
+        
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: 1px solid #ddd; background: #fff; transition: 0.2s; white-space: nowrap;}
+        .nav-btn:hover { background: #f1f3f4; }
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; }
+        .btn-primary:hover { background-color: var(--primary-dark); }
+        
+        /* [추가] 앱 설치 버튼 스타일 */
+        #installAppBtn {
+            display: none;
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800;
+            background-color: #e8f0fe; color: var(--primary-color); border: 1px solid var(--primary-color);
+            cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        #installAppBtn:hover { background-color: var(--primary-color); color: white; }
+
+        /* [수정] 플로팅 버튼 그룹 스타일 (공유 + 피드백) */
+        .floating-btn-group {
+            position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .floating-btn {
+            width: 55px; height: 55px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .floating-btn:hover { transform: scale(1.1); }
+        .floating-share { background: var(--primary-color); color: white; }
+        .floating-feedback { background: #ffca28; color: #333; }
+        
+        .hero { position: relative; height: 420px; background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 20px; }
+        .hero::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(26, 115, 232, 0.7)); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; width: 100%; max-width: 800px; }
+        .badge { display: inline-block; padding: 5px 12px; background: rgba(255,255,255,0.2); border-radius: 20px; font-size: 0.85rem; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.3); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 20px; font-weight: 800; text-shadow: 0 4px 15px rgba(0,0,0,0.4); line-height: 1.3; }
+        .hero p { font-size: 1.15rem; margin-bottom: 40px; opacity: 0.9; font-weight: 300; word-break: keep-all; }
+        .cta-btn { padding: 18px 45px; background-color: #ffca28; color: #333; font-size: 1.1rem; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.3); text-decoration: none; display: inline-block; }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.4); background-color: #ffd54f; }
+        
+        .history-section { padding: 60px 20px; max-width: 1000px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; color: var(--text-dark); }
+        .section-header p { color: var(--text-gray); font-size: 1rem; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #eee; margin-bottom: 50px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: center; white-space: nowrap; }
+        .history-table th, .history-table td { border: 1px solid #eee; padding: 12px 10px; }
+        .history-table thead tr:nth-child(1) th { background: #e3f2fd; color: #1565c0; font-weight: 800; }
+        .history-table thead tr:nth-child(2) th { background: #fff8e1; color: #e65100; }
+        .history-table thead tr:nth-child(3) th { background: #e0f7fa; color: #006064; }
+        .history-table thead tr:nth-child(4) th { background: #f5f5f5; font-weight: 800; position: sticky; top: 0; z-index: 10; }
+        .history-table tbody tr:hover { background-color: #f0f7ff; cursor: pointer; }
+        .badge-o { display: inline-block; width: 24px; height: 24px; line-height: 24px; background-color: #e8f0fe; color: #1a73e8; border-radius: 50%; font-weight: 900; font-size: 0.9rem; }
+        .badge-x { display: inline-block; width: 24px; height: 24px; line-height: 24px; background-color: #ffebee; color: #d32f2f; border-radius: 50%; font-weight: 900; font-size: 0.9rem; }
+        
+        .features-section { background-color: white; padding: 80px 20px; }
+        .features-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .feature-card { padding: 30px; border-radius: 16px; background: #f8f9fa; text-align: left; border: 1px solid #eee; transition: 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .feature-card h3 { font-size: 1.25rem; margin-bottom: 10px; font-weight: 800; }
+        .feature-card p { color: var(--text-gray); font-size: 0.95rem; line-height: 1.6; }
+        
+        .site-footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 60px 20px; font-size: 0.9rem; margin-top: auto; }
+        .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .footer-brand h2 { color: white; margin-top: 0; font-size: 1.4rem; margin-bottom: 15px; font-weight: 800; }
+        .footer-brand p { margin: 5px 0; }
+        .footer-links p { margin: 8px 0; }
+        .footer-disclaimer { margin-top: 40px; border-top: 1px solid #444; padding-top: 20px; font-size: 0.8rem; color: #777; line-height: 1.6; }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+            }
+            .logo {
+                font-size: 1.1rem;
+                margin-right: auto;
+            }
+            .nav-right-group {
+                margin-left: auto;
+                gap: 10px;
+            }
+            
+            .hero { padding: 40px 20px; height: auto; min-height: 320px; }
+            .hero h1 { font-size: 1.7rem; margin-bottom: 15px; }
+            .hero p { font-size: 0.95rem; margin-bottom: 25px; }
+            .cta-btn { width: 100%; max-width: 300px; padding: 15px; font-size: 1rem; }
+            
+            .features-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+            .col-hide-mo { display: none; }
+            .history-table th, .history-table td { padding: 8px 4px; font-size: 0.75rem; }
+            .footer-content { grid-template-columns: 1fr; gap: 30px; }
+            .floating-btn-group { bottom: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                AI 노후 설계 연구소 <span class="beta-badge">무료베타</span>
+            </a>
+            
+            <div class="nav-right-group">
+                <button id="installAppBtn" onclick="installPWA()">📲 앱 설치</button>
+
+                <div id="google_translate_element"></div>
+                
+                <div class="nav-links" id="nav-auth-area">
+                    <button class="nav-btn btn-primary" onclick="location.href='login.html'">로그인</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <span class="badge">AI Based Financial Simulation</span>
+            <h1>감(Feeling)으로 하는 <br>노후 준비는 위험합니다.</h1>
+            <p>
+                28년간 기업에서 재무와 기획전문가가 설계한 알고리즘으로<br class="mobile-break">당신의 노후를 수치로 보여 드립니다.
+            </p>
+            <a href="retirement_simulator.html" class="cta-btn">내 노후자산 무료 진단하기</a>
+        </div>
+    </header>
+
+    <section class="history-section">
+        <div class="section-header">
+            <h2>타인의 진단 현황</h2>
+            <p>지금 이 순간에도 많은 분들이 자신의 노후를 점검하고 있습니다.</p>
+        </div>
+        
+        <div class="table-container">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th rowspan="3" class="col-hide-mo">진단일시</th>
+                        <th rowspan="3">사용자 조건</th>
+                        <th rowspan="3">순자산</th>
+                        <th colspan="4">은퇴 (소득 활동 X)</th>
+                        <th colspan="4">재취업 (소득 활동 5년)</th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">거주지 유지</th><th colspan="2">자산 유동화</th>
+                        <th colspan="2">거주지 유지</th><th colspan="2">자산 유동화</th>
+                    </tr>
+                    <tr>
+                        <th>C 1</th><th>C 2</th><th>C 3</th><th>C 4</th>
+                        <th>C 5</th><th>C 6</th><th>C 7</th><th>C 8</th>
+                    </tr>
+                </thead>
+                <tbody id="history-tbody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="section-header">
+            <h2>왜 'AI 노후설계 연구소' 일까?</h2>
+            <p>단순 계산기가 아닙니다. 전문가의 관점으로 리스크를 방어합니다.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🧐</span>
+                <h3>최악까지 대비하는<br>8가지 시나리오</h3>
+                <p>국민연금 조기 수령 여부, 은퇴 후 소득 활동 유무 등 다양한 변수를 조합하여 발생할 수 있는 모든 경우의 수를 분석합니다.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🏠</span>
+                <h3>부동산 자산<br>유동화 전략</h3>
+                <p>집을 깔고 앉아만 계실 건가요? 주택연금, 다운사이징 등 부동산을 현금 흐름으로 바꾸는 구체적인 전략을 제시합니다.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💸</span>
+                <h3>숨은 비용까지<br>정밀 진단</h3>
+                <p>많은 분들이 놓치는 지역가입자 건보료 전환, 세금 이슈, 기초연금 감액 가능성까지 꼼꼼하게 체크해 드립니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h2>AI 노후설계 연구소</h2>
+                <p>Created by AI노후준비 연구소</p>
+                <p>문의: myaicfokorea@gmail.com</p>
+            </div>
+            <div class="footer-links">
+                <p style="color:white; font-weight:bold; margin-bottom:10px;">Information</p>
+                <p><a href="terms.html" style="color:#aaa; text-decoration:none;">이용약관</a></p>
+                <p><a href="privacy.html" style="color:#aaa; text-decoration:none;">개인정보처리방침</a></p>
+                <p>알고리즘 업데이트 노트</p>
+            </div>
+        </div>
+        <div class="footer-disclaimer">
+            <p><strong>[면책 조항]</strong> 본 서비스는 사용자가 입력한 데이터를 바탕으로 미래 현금 흐름을 시뮬레이션한 결과입니다. 이는 법적 효력이 없으며, 실제 연금 수령액이나 세금은 정부 정책 및 경제 상황에 따라 달라질 수 있습니다. 중요한 재무적 의사결정은 반드시 전문가와 상담하시기 바랍니다.</p>
+            <p style="margin-top: 10px;">Copyright © 2025 AI Retirement Design Lab. All rights reserved.</p>
+        </div>
+    </footer>
+
+<div class="floating-btn-group">
+        <div class="floating-btn floating-feedback" 
+             onclick="window.open('https://open.kakao.com/o/glrPDN8h', '_blank')" 
+             title="카카오톡으로 문의하기">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+
+        <div class="floating-btn floating-share" onclick="shareSite()" title="친구에게 공유하기">
+            <i class="fas fa-share-alt"></i>
+        </div>
+    </div>
+
+    <script type="module" src="calculator.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBJJshV9s_0wTNK_KM4moBC2qG_E8xErKo", 
+            authDomain: "www.myaicfo.co.kr", 
+            projectId: "nojunge-9ebbb", 
+            storageBucket: "nojunge-9ebbb.firebasestorage.app", 
+            messagingSenderId: "817970933502", 
+            appId: "1:817970933502:web:c1cebcaf10cdc681bb3faf" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const navArea = document.getElementById('nav-auth-area');
+            if (user) {
+                const now = Date.now();
+                const lastVisit = localStorage.getItem('last_visit_time');
+                const TEN_MINUTES = 10 * 60 * 1000; 
+
+                if (!lastVisit || (now - lastVisit > TEN_MINUTES)) {
+                    signOut(auth).then(() => {
+                        localStorage.removeItem('last_visit_time');
+                        location.reload(); 
+                    });
+                    return; 
+                }
+                
+                localStorage.setItem('last_visit_time', now);
+                navArea.innerHTML = `<button class="nav-btn" onclick="location.href='mypage.html'">마이페이지</button><button class="nav-btn" id=\"btn-logout\">로그아웃</button>`;
+                document.getElementById('btn-logout').onclick = () => {
+                    if(confirm("로그아웃 하시겠습니까?")) {
+                        signOut(auth).then(() => {
+                            localStorage.removeItem('last_visit_time');
+                            alert("로그아웃 되었습니다.");
+                            location.reload();
+                        });
+                    }
+                };
+            } else {
+                navArea.innerHTML = `<button class="nav-btn btn-primary" onclick="location.href='login.html'">로그인</button>`;
+            }
+        });
+
+        async function loadHistory() {
+            const q = query(collection(db, "reports"), orderBy("created_at", "desc"), limit(30));
+            const snapshot = await getDocs(q);
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = "";
+            if (snapshot.empty) { tbody.innerHTML = `<tr><td colspan=\"11\" style=\"padding:40px; color:#999;\">아직 데이터가 없습니다.</td></tr>`; return; }
+            snapshot.forEach(doc => {
+                const d = doc.data(); const inp = d.input;
+                const assetVal = (Number(inp.real_estate) + Number(inp.cash_asset))/10000;
+                const assetStr = assetVal.toFixed(1) + "억";
+                const cond = `${inp.location || '수도권'} / ${String(inp.h_year).slice(-2)}년생`;
+                const engineResults = MyAICFO_Engine.runSimulation(inp);
+                const resultBools = engineResults.map(r => r.isAllSafe);
+                const cells = resultBools.map((ok) => { return `<td><span class=\"${ok ? 'badge-o' : 'badge-x'}\">${ok ? 'O' : 'X'}</span></td>`; }).join('');
+                const tr = document.createElement('tr');
+                tr.onclick = () => { localStorage.setItem('simulationInput', JSON.stringify(inp)); localStorage.setItem('simulationViewMode', 'readonly'); location.href='result.html'; };
+                tr.innerHTML = `<td class=\"col-hide-mo\" style=\"color:#888;\">${d.date_str}</td><td style=\"font-weight:600; color:#555;\">${cond}</td><td style=\"font-weight:800; color:#333;\">${assetStr}</td>${cells}`;
+                tbody.appendChild(tr);
+            });
+        }
+        loadHistory();
+    </script>
+    
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    installBtn.style.display = 'none';
+                });
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'ko', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        function shareSite() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI 노후설계 연구소',
+                    text: '28년차 재무 전문가가 만든 무료 노후 준비 시뮬레이션입니다. 당신의 노후는 안전한가요?',
+                    url: window.location.href,
+                })
+                .then(() => console.log('공유 성공'))
+                .catch((error) => console.log('공유 실패', error));
+            } else {
+                var dummy   = document.createElement("input");
+                document.body.appendChild(dummy);
+                dummy.value = window.location.href;
+                dummy.select();
+                document.execCommand("copy");
+                document.body.removeChild(dummy);
+                alert("주소가 복사되었습니다! 원하는 곳에 붙여넣기 하세요.");
+            }
+        }
+    </script>
+</body>
+</html>

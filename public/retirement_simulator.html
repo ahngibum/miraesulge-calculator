@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
+<link rel="apple-touch-icon" href="icon-192.png"> 
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then((reg) => console.log('서비스 워커 등록 성공:', reg.scope))
+        .catch((err) => console.log('서비스 워커 등록 실패:', err));
+    });
+  }
+</script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1T5GDGTWV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z1T5GDGTWV'); 
+    </script>
+
+    <meta name="google-site-verification" content="cWFxIon7qS5Gk8MmrZbPi5_3BgRViz_LARaZF3qp_Xo" />
+
+    <title>AI 노후 설계 연구소 - 무료 노후 준비 시뮬레이션 & 은퇴 자금 진단</title>
+    <meta name="description" content="막막한 노후 준비, AI가 진단해 드립니다. 국민연금, 퇴직연금, 부동산 자산을 종합 분석하여 당신의 은퇴 후 생존 시나리오를 무료로 시뮬레이션하세요.">
+    <link rel="canonical" href="https://www.myaicfo.co.kr">
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <style>
+        :root {
+            --primary-color: #1a73e8; 
+            --primary-dark: #1557b0;
+            --bg-color: #f0f2f5;      
+            --card-bg: #ffffff;       
+            --text-main: #202124;
+            --text-sub: #5f6368;
+            --border-color: #dadce0;
+            --focus-glow: rgba(26, 115, 232, 0.2);
+        }
+
+        body { 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-main); 
+            line-height: 1.5;
+            
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        .navbar { 
+            background-color: white; 
+            border-bottom: 1px solid #eee; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            width: 100%;
+            padding: 12px 0;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .logo { font-size: 1.3rem; font-weight: 900; color: var(--primary-color); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* [추가] 구글 번역기 스타일 */
+        #google_translate_element { margin-left: auto; margin-right: 15px; }
+        
+        .beta-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            background-color: #ffd600;
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 5px;
+            font-weight: 900;
+            vertical-align: middle;
+            border: 1px solid #e6b800;
+            white-space: nowrap;
+        }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { padding: 8px 18px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #ddd; background: #fff; transition: 0.2s; }
+        .nav-btn:hover { background: #f1f3f4; }
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; }
+        .btn-primary:hover { background-color: var(--primary-dark); }
+
+        .hero-section { position: relative; width: 100%; height: 220px; background-color: #333; background-image: url('header_bg.png'); background-size: cover; background-position: center 30%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 20px; }
+        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(26, 115, 232, 0.8), rgba(0, 0, 0, 0.6)); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; }
+        .hero-content h1 { font-size: 2.2rem; margin: 0 0 10px 0; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .hero-content p { font-size: 1rem; opacity: 0.9; font-weight: 400; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        .container { width: 95%; max-width: 800px; margin: 40px auto 60px; position: relative; z-index: 10; }
+        .main-section { background: transparent; margin-bottom: 40px; }
+        .main-section-title { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; color: #2c3e50; margin-bottom: 20px; padding-left: 5px; }
+        .section-num { background-color: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: bold; box-shadow: 0 2px 5px rgba(26,115,232,0.3); }
+        .input-card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid white; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .sub-title { font-size: 1.15rem; font-weight: 700; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f3f4; display: flex; align-items: center; gap: 8px; }
+        .sub-title::before { content: ''; display: block; width: 4px; height: 18px; background-color: var(--primary-color); border-radius: 2px; }
+        .field-group { margin-bottom: 20px; }
+        .field-label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
+        input[type="number"], select { width: 100%; padding: 14px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; transition: 0.2s; box-sizing: border-box; background-color: #fff; }
+        input[type="number"]:focus, select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 4px var(--focus-glow); }
+        .input-highlight { color: var(--primary-color) !important; font-weight: 800; font-size: 1.15rem; text-align: right; }
+        .unit-wrapper { display: flex; align-items: center; gap: 10px; }
+        .unit-text { font-size: 0.95rem; color: #666; white-space: nowrap; font-weight: 500; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-1 { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .live-feedback { margin-top: 8px; font-size: 0.9rem; font-weight: 600; color: #0056b3; background-color: #e8f0fe; padding: 10px 15px; border-radius: 8px; }
+        .ie-box { flex: 1; display: flex; align-items: center; gap: 10px; background: #f8f9fa; border: 1px solid var(--border-color); padding: 10px 15px; border-radius: 8px; }
+        
+        .pension-row { display: grid; grid-template-columns: 60px 1fr 1fr; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed #eee; }
+        .p-label { font-weight: 700; color: #555; }
+        
+        .submit-btn { width: 100%; padding: 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(26,115,232,0.3); margin-top: 20px; }
+        .submit-btn:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .nav-container { justify-content: center !important; text-align: center; gap: 8px; }
+            .logo { width: 100%; justify-content: center; margin-bottom: 5px; font-size: 1.1rem; }
+            .nav-links { width: 100%; justify-content: center; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .navbar { padding: 10px 15px; padding-top: env(safe-area-inset-top); }
+            /* 모바일 번역기 위치 */
+            #google_translate_element { margin: 5px auto; }
+            
+            .grid-2 { grid-template-columns: 1fr; }
+            .pension-row { grid-template-columns: 1fr; gap: 8px; background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+            
+            input[type="number"], select { font-size: 16px !important; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                AI 노후 설계 연구소 <span class="beta-badge">무료베타버전</span>
+            </a>
+            <div id="google_translate_element"></div>
+            <div class="nav-links" id="nav-auth-area"></div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>노후 준비 시뮬레이션</h1>
+            <p>정확한 진단을 위해 현재 상황을 입력해 주세요.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <form id="retirementForm">
+            <div class="main-section">
+                <div class="main-section-title"><div class="section-num">1</div>기본 정보</div>
+                <div class="input-card">
+                    <div class="sub-title">부부 생년월일</div>
+                    <div class="grid-2">
+                        <div class="field-group">
+                            <label class="field-label">남편</label>
+                            <div class="unit-wrapper">
+                                <input type="number" id="h_year" value="1969" class="input-highlight" oninput="autoSetPensionYear('husband')"><span class="unit-text">년</span>
+                                <input type="number" id="h_month" value="7" class="input-highlight"><span class="unit-text">월생</span>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">아내</label>
+                            <div class="unit-wrapper">
+                                <input type="number" id="w_year" value="1970" class="input-highlight" oninput="autoSetPensionYear('wife')"><span class="unit-text">년</span>
+                                <input type="number" id="w_month" value="4" class="input-highlight"><span class="unit-text">월생</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="live-feedback"><span id="h_birth_display"></span> / <span id="w_birth_display"></span></div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-section-title"><div class="section-num">2</div>자산 및 현재 수지</div>
+                <div class="input-card">
+                    <div class="sub-title">거주지 및 주거 형태</div>
+                    <div class="grid-2">
+                        <div class="field-group">
+                            <label class="field-label">거주 지역</label>
+                            <select id="location">
+                                <option value="수도권">수도권 (서울/경기/인천)</option>
+                                <option value="광역시">광역시/세종/특례시</option>
+                                <option value="기타">기타 지방</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">주거 형태</label>
+                            <select id="housing_type">
+                                <option value="owned" selected>자가 (본인 소유)</option>
+                                <option value="jeonse">전세</option>
+                                <option value="wolse">월세 (보증금+월세)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="live-feedback" id="residence_display"></div>
+                </div>
+
+                <div class="input-card">
+                    <div class="sub-title">보유 자산 상세 입력</div>
+                    <div class="grid-1">
+                        <div class="field-group">
+                            <label class="field-label" id="estate_label">부동산 시세</label>
+                            <div class="unit-wrapper"><input type="number" id="real_estate" value="30000" class="input-highlight"><span class="unit-text">만원</span></div>
+                        </div>
+                        <div class="field-group hidden" id="wolse_input_div">
+                            <label class="field-label" style="color:#d32f2f;">매월 나가는 월세 (관리비 제외)</label>
+                            <div class="unit-wrapper"><input type="number" id="monthly_rent_cost" value="0" class="input-highlight" style="color:#d32f2f !important;"><span class="unit-text">만원</span></div>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">보유 순현금 자산 (대출 제외)</label>
+                            <div class="unit-wrapper"><input type="number" id="cash_asset" value="30000" class="input-highlight"><span class="unit-text">만원</span></div>
+                        </div>
+                    </div>
+                    <div class="live-feedback" id="asset_display"></div>
+                </div>
+
+                <div class="input-card">
+                    <div class="sub-title">현재 월 수입 및 지출</div>
+                    <div class="grid-2">
+                        <div class="field-group">
+                            <label class="field-label">월 평균 수입</label>
+                            <div class="ie-box"><input type="number" id="current_income" value="500" class="input-highlight" style="background:transparent; border:none; padding:0;"><span class="unit-text">만원</span></div>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">월 평균 지출</label>
+                            <div class="ie-box"><input type="number" id="current_expense" value="450" class="input-highlight" style="background:transparent; border:none; padding:0; color:#d32f2f !important;"><span class="unit-text">만원</span></div>
+                        </div>
+                    </div>
+                    <div class="live-feedback" id="current_flow_display"></div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-section-title"><div class="section-num">3</div>연금 정보</div>
+                <div class="input-card">
+                    <div class="sub-title">① 국민연금 (예상 수령액)</div>
+                    <div class="pension-row">
+                        <div class="p-label">남편</div>
+                        <div class="unit-wrapper"><input type="number" id="h_np_amt" value="120" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="h_np_year" readonly class="input-highlight" style="background:#f9f9f9;"><span class="unit-text">세 개시</span></div>
+                    </div>
+                    <div class="pension-row">
+                        <div class="p-label">아내</div>
+                        <div class="unit-wrapper"><input type="number" id="w_np_amt" value="0" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="w_np_year" readonly class="input-highlight" style="background:#f9f9f9;"><span class="unit-text">세 개시</span></div>
+                    </div>
+                    <div class="live-feedback" style="display:flex; justify-content:space-between;"><span id="h_np_display"></span><span id="w_np_display"></span></div>
+                </div>
+
+                <div class="input-card">
+                    <div class="sub-title">② 퇴직연금 (IRP 등)</div>
+                    <div class="pension-row">
+                        <div class="p-label">남편</div>
+                        <div class="unit-wrapper"><input type="number" id="h_rp_amt" value="0" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="h_rp_dur" value="0" class="input-highlight"><span class="unit-text">년 수령</span></div>
+                    </div>
+                    <div class="pension-row">
+                        <div class="p-label">아내</div>
+                        <div class="unit-wrapper"><input type="number" id="w_rp_amt" value="0" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="w_rp_dur" value="0" class="input-highlight"><span class="unit-text">년 수령</span></div>
+                    </div>
+                </div>
+
+                <div class="input-card">
+                    <div class="sub-title">③ 개인연금 (연금저축 등)</div>
+                    <div class="pension-row">
+                        <div class="p-label">남편</div>
+                        <div class="unit-wrapper"><input type="number" id="h_pp_amt" value="0" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="h_pp_dur" value="0" class="input-highlight"><span class="unit-text">년 수령</span></div>
+                    </div>
+                    <div class="pension-row">
+                        <div class="p-label">아내</div>
+                        <div class="unit-wrapper"><input type="number" id="w_pp_amt" value="0" class="input-highlight"><span class="unit-text">만원/월</span></div>
+                        <div class="unit-wrapper"><input type="number" id="w_pp_dur" value="0" class="input-highlight"><span class="unit-text">년 수령</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-section-title"><div class="section-num">4</div>은퇴 이후 계획</div>
+                <div class="input-card">
+                    <div class="sub-title">은퇴 시점 및 생활비 목표</div>
+                    <div class="grid-2">
+                        <div class="field-group">
+                            <label class="field-label">은퇴 희망 나이 (완전 은퇴)</label>
+                            <div class="unit-wrapper">
+                                <input type="number" id="target_retirement_age" value="65" class="input-highlight"><span class="unit-text">세</span>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">은퇴 후 희망 월 생활비</label>
+                            <div class="ie-box">
+                                <input type="number" id="retirement_living_cost" value="300" class="input-highlight" style="background:transparent; border:none; padding:0;"><span class="unit-text">만원</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="live-feedback" id="retirement_plan_display"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">최종 분석 시뮬레이션 시작</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBJJshV9s_0wTNK_KM4moBC2qG_E8xErKo", 
+            authDomain: "www.myaicfo.co.kr", 
+            projectId: "nojunge-9ebbb", 
+            storageBucket: "nojunge-9ebbb.firebasestorage.app", 
+            messagingSenderId: "817970933502", 
+            appId: "1:817970933502:web:c1cebcaf10cdc681bb3faf" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const navArea = document.getElementById('nav-auth-area');
+            if (user) {
+                const now = Date.now();
+                const lastVisit = localStorage.getItem('last_visit_time');
+                const TEN_MINUTES = 10 * 60 * 1000;
+
+                if (!lastVisit || (now - lastVisit > TEN_MINUTES)) {
+                    signOut(auth).then(() => {
+                        localStorage.removeItem('last_visit_time');
+                        location.reload(); 
+                    });
+                    return;
+                }
+                localStorage.setItem('last_visit_time', now);
+
+                navArea.innerHTML = `<button class="nav-btn" onclick="location.href='mypage.html'">마이페이지</button><button class="nav-btn" id="btn-logout">로그아웃</button>`;
+                document.getElementById('btn-logout').onclick = () => {
+                    if(confirm("로그아웃 하시겠습니까?")) {
+                        signOut(auth).then(() => {
+                            localStorage.removeItem('last_visit_time');
+                            alert("로그아웃 되었습니다.");
+                            location.href='index.html'; 
+                        });
+                    }
+                };
+            } else {
+                navArea.innerHTML = `<button class="nav-btn btn-primary" onclick="location.href='login.html'">로그인</button>`;
+            }
+        });
+    </script>
+
+    <script>
+        const fmt = (v) => v ? Number(v).toLocaleString() : '0';
+
+        function autoSetPensionYear(p) {
+            const y = Number(document.getElementById(p==='husband'?'h_year':'w_year').value);
+            if (!y || y < 1900) return;
+            let add = 65;
+            if (y<=1952) add=60; else if (y<=1956) add=61; else if (y<=1960) add=62; else if (y<=1964) add=63; else if (y<=1968) add=64;
+            document.getElementById(p==='husband'?'h_np_year':'w_np_year').value = y + add;
+            updateUI();
+        }
+
+        function updateUI() {
+            ['h_month', 'w_month'].forEach(id => { const el = document.getElementById(id); if (el.value > 12) el.value = 12; });
+
+            document.getElementById('h_birth_display').innerText = `남편: ${document.getElementById('h_year').value}년생`;
+            document.getElementById('w_birth_display').innerText = `아내: ${document.getElementById('w_year').value}년생`;
+            
+            const housingType = document.getElementById('housing_type').value;
+            const estateLabel = document.getElementById('estate_label');
+            const wolseInputDiv = document.getElementById('wolse_input_div');
+            
+            let typeText = "자가";
+            if (housingType === 'owned') {
+                typeText = "자가";
+                estateLabel.innerText = "부동산 시세 (현재가)";
+                wolseInputDiv.classList.add('hidden');
+            } else if (housingType === 'jeonse') {
+                typeText = "전세";
+                estateLabel.innerText = "전세 보증금 (대출 제외 순액)";
+                wolseInputDiv.classList.add('hidden');
+            } else if (housingType === 'wolse') {
+                typeText = "월세";
+                estateLabel.innerText = "월세 보증금 (대출 제외 순액)";
+                wolseInputDiv.classList.remove('hidden');
+            }
+
+            document.getElementById('residence_display').innerText = `${document.getElementById('location').value} / ${typeText}`;
+            
+            const re = Number(document.getElementById('real_estate').value);
+            const cash = Number(document.getElementById('cash_asset').value);
+            document.getElementById('asset_display').innerText = `총 순자산: ${fmt(re + cash)}만원`;
+
+            const curInc = document.getElementById('current_income').value;
+            const curExp = document.getElementById('current_expense').value;
+            document.getElementById('current_flow_display').innerText = `월 잉여금: ${fmt(curInc - curExp)}만원`;
+
+            const pIds = ['h_np', 'w_np'];
+            pIds.forEach(id => {
+                const amt = document.getElementById(id + '_amt').value;
+                const year = document.getElementById(id + '_year').value;
+                document.getElementById(id + '_display').innerText = `${id.startsWith('h')?'남편':'아내'}: 월 ${fmt(amt)}만 (${year}세~)`;
+            });
+            
+            const planCost = document.getElementById('retirement_living_cost').value;
+            const retireAge = document.getElementById('target_retirement_age').value;
+            document.getElementById('retirement_plan_display').innerText = `은퇴 목표: ${retireAge}세 / 희망 생활비: 월 ${fmt(planCost)}만원`;
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', updateUI);
+            el.addEventListener('change', updateUI);
+        });
+
+        document.getElementById('retirementForm').onsubmit = (e) => {
+            e.preventDefault();
+            const data = {};
+            document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.type==='number' ? Number(el.value) : el.value; });
+            
+            if (data.housing_type !== 'wolse') { data.monthlyRentCost = 0; } 
+            else { data.monthlyRentCost = Number(document.getElementById('monthly_rent_cost').value); }
+            data.housingType = document.getElementById('housing_type').value;
+
+            localStorage.setItem('simulationInput', JSON.stringify(data));
+            localStorage.setItem('simulationViewMode', 'interactive'); 
+            window.location.href = 'result.html';
+        };
+
+        autoSetPensionYear('husband');
+        autoSetPensionYear('wife');
+        updateUI();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedJson = localStorage.getItem('simulationInput');
+            if (savedJson) {
+                try {
+                    const d = JSON.parse(savedJson);
+                    for (const key in d) {
+                        const el = document.getElementById(key);
+                        if (el) el.value = d[key];
+                    }
+                    if(d.housingType) document.getElementById('housing_type').value = d.housingType;
+                    if(d.location) document.getElementById('location').value = d.location;
+                    if(d.monthlyRentCost) document.getElementById('monthly_rent_cost').value = d.monthlyRentCost;
+                    updateUI();
+                } catch(e) { console.log("데이터 불러오기 실패:", e); }
+            }
+        });
+    </script>
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'ko', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+
+1. SEO와 구글로그분석기을 통한 방문자와 사이트 분석 등
+2. 계산검증 : 인풋과 아웃품에 대한 검증
+3. 20대~60세까지의 상세 내역을 모든 연도별로 나누어서 확인하기
+
+head
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WDHD5J3V');</script>
+<!-- End Google Tag Manager -->
+
+body
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WDHD5J3V"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+측정 ID : G-Z1T5GDGTWV

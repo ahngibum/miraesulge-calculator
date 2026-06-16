@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI SEO Insight Board</title>
+    <meta name="description" content="AI가 분석한 최신 SEO 트렌드와 디지털 마케팅 전략 모음">
+    <link rel="stylesheet" href="./board.css">
+    <!-- Firebase SDKs -->
+    <script defer src="/__/firebase/10.7.1/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.7.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>AI SEO Insight</h1>
+        <p class="subtitle">AI가 실시간으로 분석하는 검색 최적화 전략</p>
+    </header>
+
+    <main id="post-list" class="post-grid">
+        <!-- Posts will be loaded here -->
+        <div class="loading">게시글을 불러오는 중...</div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const db = firebase.firestore();
+            const postsSnapshot = await db.collection('posts')
+                .orderBy('createdAt', 'desc')
+                .limit(20)
+                .get();
+
+            const postList = document.getElementById('post-list');
+            postList.innerHTML = ''; // Clear loading
+
+            postsSnapshot.forEach(doc => {
+                const post = doc.data();
+                const card = document.createElement('a');
+                card.className = 'post-card';
+                // Use slug if available, otherwise ID. 
+                // We point to /post/SLUG or /post?id=ID. 
+                // For SEO with Functions, we'll use /post/SLUG later.
+                // For now, let's use query param for simplicity until Rewrite is set.
+                const href = post.slug ? `/post/${post.slug}` : `/post.html?id=${doc.id}`;
+                card.href = href;
+
+                const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : '';
+
+                card.innerHTML = `
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-meta">${date}</div>
+                    <div class="post-tags">
+                        ${(post.tags || []).map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                `;
+                postList.appendChild(card);
+            });
+
+        } catch (e) {
+            console.error(e);
+            document.getElementById('post-list').innerHTML = '<p>게시글을 불러오는데 실패했습니다.</p>';
+        }
+    });
+</script>
+
+</body>
+</html>

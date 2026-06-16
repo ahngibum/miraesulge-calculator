@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        (function() {
+            var userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes('kakaotalk') || userAgent.includes('naver')) {
+                // 현재 페이지 주소
+                var targetUrl = location.href;
+                
+                if (userAgent.includes('android')) {
+                    // 안드로이드: 크롬으로 열기 강제
+                    location.href = 'intent://' + targetUrl.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+                    // 아이폰: 사파리로 열기 유도 (이 부분은 자동 전환이 어려울 수 있어 안내 메시지 표시 추천)
+                    // 아이폰 카카오톡은 자동 탈출이 제한적이므로 아래 UI에서 버튼으로 안내합니다.
+                }
+            }
+        })();
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1T5GDGTWV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z1T5GDGTWV'); 
+    </script>
+
+    <title>AI 노후설계 연구소 - 로그인</title>
+    <style>
+        :root { --primary-color: #1a73e8; --bg-color: #f4f7f9; }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .navbar { display: flex; padding: 15px 30px; background-color: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.3rem; font-weight: 900; color: var(--primary-color); text-decoration: none; }
+        
+        .login-wrap { display: flex; flex: 1; width: 100%; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .login-container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        
+        h1 { color: var(--primary-color); margin-bottom: 10px; font-weight: 900; }
+        p { color: #666; margin-bottom: 30px; font-size: 0.95rem; }
+        
+        .social-btn { width: 100%; padding: 14px; margin-bottom: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; transition: 0.2s; }
+        .btn-google { background-color: #ffffff; border: 1px solid #ddd; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn-google:active { background-color: #eee; }
+        
+        .home-link { margin-top: 30px; display: block; color: #888; text-decoration: none; font-size: 0.9rem; }
+
+        /* [추가] 로딩 중 표시 */
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 999; justify-content: center; align-items: center; font-weight: bold; color: var(--primary-color); }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><a href="index.html" class="logo">AI 노후설계 연구소</a></nav>
+
+    <div id="loading-overlay">로그인 처리 중입니다...</div>
+
+    <div class="login-wrap">
+        <div class="login-container">
+            <h1>📊 AI 노후설계 연구소</h1>
+            <p>로그인하고 나의 노후 준비 상태를 진단하세요.</p>
+
+            <div style="margin-bottom: 20px;">
+                <button class="social-btn btn-google" id="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G">
+                    Google 계정으로 시작하기
+                </button>
+            </div>
+            
+            <a href="index.html" class="home-link">← 메인화면으로 돌아가기</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        // [중요] signInWithRedirect 제거하고 signInWithPopup만 사용
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBJJshV9s_0wTNK_KM4moBC2qG_E8xErKo", 
+            // [핵심 수정] authDomain을 Firebase 기본 도메인으로 변경 (빈 화면 오류 해결의 핵심)
+            authDomain: "nojunge-9ebbb.firebaseapp.com", 
+            projectId: "nojunge-9ebbb", 
+            storageBucket: "nojunge-9ebbb.firebasestorage.app", 
+            messagingSenderId: "817970933502", 
+            appId: "1:817970933502:web:c1cebcaf10cdc681bb3faf" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        function handleLoginSuccess() {
+            localStorage.setItem('last_visit_time', Date.now());
+            const urlParams = new URLSearchParams(window.location.search);
+            // 로그인 성공 후 무조건 result.html 또는 index.html로 확실히 이동
+            window.location.replace((urlParams.get('from') === 'result') ? 'result.html' : 'index.html');
+        }
+
+        // 이미 로그인된 상태인지 확인
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loading-overlay').style.display = 'flex';
+                handleLoginSuccess();
+            }
+        });
+
+        // [버튼 클릭 시] 무조건 팝업 사용
+        document.getElementById('btn-google').addEventListener('click', () => {
+            document.getElementById('loading-overlay').style.display = 'flex'; // 로딩 표시 시작
+            
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // 성공 시 화면 이동
+                    if (result.user) handleLoginSuccess();
+                })
+                .catch((error) => {
+                    document.getElementById('loading-overlay').style.display = 'none'; // 로딩 끄기
+                    console.error("Login Error:", error);
+
+                    if (error.code === 'auth/popup-blocked') {
+                        alert("팝업이 차단되었습니다. [설정]에서 팝업 차단을 해제하거나, 크롬(Chrome) 브라우저를 이용해 주세요.");
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                        // 사용자가 창을 닫음 (무시)
+                    } else {
+                        // 에러 내용을 화면에 출력하여 디버깅 용이하게 함
+                        alert("로그인 실패: " + error.message + "\n(Code: " + error.code + ")");
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

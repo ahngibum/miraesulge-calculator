@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1T5GDGTWV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-Z1T5GDGTWV'); 
+    </script>
+
+    <title>AI 노후 준비 - 상세 검증 리포트</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --bg-color: #f4f7f9;
+            --border-color: #d1d9e0;
+            --danger-color: #d32f2f;
+            --success-color: #137333;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 98%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .close-btn {
+            padding: 8px 16px;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* 탭 스타일 */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            background-color: #f1f3f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn:hover {
+            background-color: #e8f0fe;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 탭 콘텐츠 영역 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 비용 비교 박스 */
+        .expense-compare-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background-color: #fff8e1;
+            border: 2px solid #ffe082;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .compare-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .compare-card.safe {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .compare-card.danger {
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .compare-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .compare-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .compare-total {
+            border-top: 1px dashed #ccc;
+            margin-top: 10px;
+            padding-top: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            color: #333;
+        }
+
+        .badge-danger {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .badge-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* 차트 영역 */
+        .chart-container {
+            height: 350px;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        /* 테이블 스타일 */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: right;
+            min-width: 1100px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px 6px;
+            white-space: nowrap;
+        }
+
+        thead th {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            text-align: center;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid #999;
+        }
+
+        thead tr:nth-child(2) th {
+            top: 35px;
+        }
+
+        /* 고정 열 */
+        thead th:nth-child(-n+3),
+        tbody td:nth-child(-n+3) {
+            position: sticky;
+            left: 0;
+            background-color: #f8f9fa;
+            z-index: 5;
+            text-align: center;
+        }
+
+        tbody td:nth-child(2) {
+            left: 40px;
+        }
+
+        tbody td:nth-child(3) {
+            left: 120px;
+            border-right: 2px solid #ccc;
+        }
+
+        .income-col {
+            background-color: #f1f8e9;
+        }
+
+        .expense-col {
+            background-color: #fff3e0;
+        }
+
+        .balance-col {
+            background-color: #e8eaf6;
+            font-weight: bold;
+        }
+
+        .negative {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .positive {
+            color: #1a73e8;
+        }
+
+        .pre-retire th,
+        .pre-retire td {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .col-total {
+            font-weight: 800;
+            background-color: #dcedc8;
+        }
+
+        .btn-area {
+            text-align: center;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 30px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-save {
+            background-color: #2e7d32;
+        }
+
+        @media screen and (max-width: 768px) {
+            .expense-compare-box {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .btn-area {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 10px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 상세 시뮬레이션 검증 리포트</h1>
+            <button class="close-btn" onclick="history.back()">닫기</button>
+        </div>
+
+        <div class="tabs" id="tabs"></div>
+        <div id="tab-contents"></div>
+
+        <div class="btn-area">
+            <button class="btn-save" id="btn-save">💾 결과 저장하기</button>
+            <button onclick="window.print()">🖨️ 출력하기</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJJshV9s_0wTNK_KM4moBC2qG_E8xErKo",
+            authDomain: "www.myaicfo.co.kr",
+            projectId: "nojunge-9ebbb",
+            storageBucket: "nojunge-9ebbb.firebasestorage.app",
+            messagingSenderId: "817970933502",
+            appId: "1:817970933502:web:c1cebcaf10cdc681bb3faf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => { currentUser = user; });
+
+        const saveBtn = document.getElementById('btn-save');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                if (!currentUser) {
+                    if (confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = 'login.html';
+                    }
+                    return;
+                }
+                try {
+                    await addDoc(collection(db, "reports"), {
+                        uid: currentUser.uid, email: currentUser.email, created_at: serverTimestamp(),
+                        date_str: new Date().toISOString().slice(0, 10).replace(/-/g, '.'),
+                        input: window.simulationData, summary: window.simulationSummary || {}
+                    });
+                    alert("✅ 결과가 성공적으로 저장되었습니다!");
+                } catch (e) { alert("저장 실패: " + e.message); }
+            });
+        }
+    </script>
+
+    <script type="module" src="calculator.js"></script>
+
+    <script type="module">
+        // [수정] 반올림하여 천 단위 콤마 포맷팅 (합계 불일치 방지용)
+        const fmt = (n) => n !== undefined ? Math.round(n).toLocaleString() : '0';
+
+        // 데이터 로드 및 시뮬레이션 실행
+        let data = {};
+        try { if (localStorage.getItem('simulationInput')) data = JSON.parse(localStorage.getItem('simulationInput')); } catch (e) { }
+
+        // 데이터가 없는 경우 기본값
+        if (!data.h_year) data = { h_year: 1969, h_month: 7, w_year: 1970, w_month: 4, real_estate: 50000, cash_asset: 10000, retirement_living_cost: 300, retirement_job_income: 175, current_income: 500, current_expense: 400 };
+
+        window.simulationData = data;
+
+        // 시뮬레이션 실행
+        const engineResults = MyAICFO_Engine.runSimulation(data);
+
+        const tabsContainer = document.getElementById('tabs');
+        const contentsContainer = document.getElementById('tab-contents');
+
+        // URL 파라미터로 특정 탭 선택
+        const params = new URLSearchParams(window.location.search);
+        let activeTabId = params.get('id') ? (parseInt(params.get('id')) - 1) : 0;
+        if (activeTabId < 0 || activeTabId >= 8) activeTabId = 0;
+
+        // 탭 및 콘텐츠 생성 루프
+        engineResults.forEach((caseData, index) => {
+            // 1. 탭 버튼 생성
+            const btn = document.createElement('div');
+            btn.className = `tab-btn ${index === activeTabId ? 'active' : ''}`;
+            btn.innerText = caseData.name;
+            btn.onclick = () => switchTab(index);
+            tabsContainer.appendChild(btn);
+
+            // 2. 콘텐츠 영역 생성
+            const content = document.createElement('div');
+            content.className = `tab-content ${index === activeTabId ? 'active' : ''}`;
+            content.id = `tab-${index}`;
+
+            // 비교 박스용 데이터 준비
+            const retiredLog = caseData.log.find(r => r.isRetired);
+            const healthFee = retiredLog ? (retiredLog.healthIns ? retiredLog.healthIns.fee : 0) : 0;
+            const baseLiving = Number(data.retirement_living_cost);
+            const totalWithHealth = baseLiving + healthFee;
+
+            // 3. 비교 박스 HTML
+            let compareHtml = `
+                <div class="expense-compare-box">
+                    <div class="compare-card safe">
+                        <div class="compare-title">😀 피부양자 유지 시 <span class="badge-success">BEST</span></div>
+                        <div class="compare-row"><span>기본 생활비</span> <span>${fmt(baseLiving)}만원</span></div>
+                        <div class="compare-row"><span>건강보험료</span> <span>0만원</span></div>
+                        <div class="compare-total"><span>월 필요자금</span> <span>${fmt(baseLiving)}만원</span></div>
+                    </div>
+                    <div class="compare-card danger">
+                        <div class="compare-title">😥 지역가입자 전환 시 <span class="badge-danger">WARNING</span></div>
+                        <div class="compare-row"><span>기본 생활비</span> <span>${fmt(baseLiving)}만원</span></div>
+                        <div class="compare-row" style="color:#c62828; font-weight:bold;"><span>건강보험료(예상)</span> <span>+ ${fmt(healthFee)}만원</span></div>
+                        <div class="compare-total" style="color:#c62828;"><span>월 필요자금</span> <span>${fmt(totalWithHealth)}만원</span></div>
+                    </div>
+                </div>
+            `;
+
+            // 4. 차트 영역 HTML
+            let chartHtml = `<div class="chart-container"><canvas id="chart-${index}"></canvas></div>`;
+
+            // 5. 상세 테이블 HTML
+            let tableHtml = `
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">나이</th><th rowspan="2">부동산</th><th rowspan="2">기말<br>현금</th>
+                                <th colspan="7" class="income-col">연간 수입 상세</th>
+                                <th rowspan="2" class="expense-col">연간<br>지출</th><th rowspan="2" class="balance-col">연간<br>수지</th>
+                            </tr>
+                            <tr>
+                                <th class="income-col">근로</th><th class="income-col">국민</th><th class="income-col">퇴직</th>
+                                <th class="income-col">개인</th><th class="income-col">주택</th>
+                                <th class="income-col" style="color:#1565c0;">기초</th> <th class="col-total">합계</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            caseData.log.forEach(row => {
+                const endClass = row.endCash < 0 ? 'negative' : 'positive';
+                const rowClass = row.isRetired ? '' : 'pre-retire';
+
+                // [중요] 시각적 합계 불일치 방지를 위해 표시 값을 먼저 반올림하고 더함
+                const d_labor = Math.round(row.incomes.labor);
+                const d_np = Math.round(row.incomes.np);
+                const d_rp = Math.round(row.incomes.rp);
+                const d_pp = Math.round(row.incomes.pp);
+                const d_home = Math.round(row.incomes.home);
+                const d_basic = Math.round(row.incomes.basic);
+                const d_total = d_labor + d_np + d_rp + d_pp + d_home + d_basic; // 표시된 값들의 합
+
+                const d_expense = Math.round(row.expense);
+                const d_net = d_total - d_expense;
+                const netClass = d_net >= 0 ? 'positive' : 'negative';
+
+                tableHtml += `
+                    <tr class="${rowClass}">
+                        <th>${row.age}세</th>
+                        <td>${fmt(row.estate)}</td>
+                        <td class="${endClass}" style="font-weight:bold;">${fmt(row.endCash)}</td>
+                        
+                        <td class="income-col">${d_labor.toLocaleString()}</td>
+                        <td class="income-col">${d_np.toLocaleString()}</td>
+                        <td class="income-col">${d_rp.toLocaleString()}</td>
+                        <td class="income-col">${d_pp.toLocaleString()}</td>
+                        <td class="income-col">${d_home.toLocaleString()}</td>
+                        <td class="income-col" style="color:#1565c0; font-weight:bold;">${d_basic.toLocaleString()}</td> 
+                        <td class="col-total">${d_total.toLocaleString()}</td>
+                        
+                        <td class="expense-col">${d_expense.toLocaleString()}</td>
+                        <td class="balance-col ${netClass}">${d_net.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+
+            // 콘텐츠 조립
+            content.innerHTML = compareHtml + chartHtml + tableHtml;
+            contentsContainer.appendChild(content);
+        });
+
+        // 탭 전환 함수
+        function switchTab(index) {
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === index));
+            document.querySelectorAll('.tab-content').forEach((con, i) => con.classList.toggle('active', i === index));
+            renderChart(index);
+        }
+
+        // 차트 렌더링 함수
+        function renderChart(index) {
+            const ctx = document.getElementById(`chart-${index}`);
+            if (!ctx || ctx.classList.contains('rendered')) return;
+
+            const targetCase = engineResults[index];
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: targetCase.log.map(l => l.age + '세'),
+                    datasets: [
+                        { label: '현금 자산', data: targetCase.log.map(l => l.endCash), borderColor: '#2e7d32', backgroundColor: 'rgba(46, 125, 50, 0.1)', fill: true, tension: 0.3 },
+                        { label: '부동산 자산', data: targetCase.log.map(l => l.estate), borderColor: '#1565c0', borderDash: [5, 5], fill: false, tension: 0.1 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: `[${targetCase.name}] 자산 변화 추이 (단위: 만원)` },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: { y: { beginAtZero: false, grid: { color: '#eee' } }, x: { grid: { display: false } } }
+                }
+            });
+            ctx.classList.add('rendered');
+        }
+
+        setTimeout(() => renderChart(activeTabId), 100);
+
+    </script>
+</body>
+
+</html>

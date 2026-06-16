@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1T5GDGTWV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z1T5GDGTWV'); 
+    </script>
+
+    <meta name="google-site-verification" content="cWFxIon7qS5Gk8MmrZbPi5_3BgRViz_LARaZF3qp_Xo" />
+
+    <title>AI 노후 설계 연구서 - 무료 노후 준비 시뮬레이션 & 은퇴 자금 진단</title>
+    <meta name="description" content="막막한 노후 준비, AI가 진단해 드립니다. 국민연금, 퇴직연금, 부동산 자산을 종합 분석하여 당신의 은퇴 후 생존 시나리오를 무료로 시뮬레이션하세요.">
+    <link rel="canonical" href="https://www.myaicfo.co.kr">
+
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "AI 노후설계 연구소 시뮬레이터",
+      "operatingSystem": "Web",
+      "applicationCategory": "FinanceApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "description": "국민연금, 개인 자산 정보를 바탕으로 노후 준비 상태를 진단하고 시나리오를 분석해주는 AI 기반 웹 애플리케이션입니다."
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #1a73e8; --secondary-color: #5f6368;
+            --success-color: #e6f4ea; --success-text: #137333;
+            --danger-color: #d32f2f; --warning-color: #fbc02d;
+            --bg-color: #f4f7f9; --border-color: #d1d9e0;
+            --header-row-1: #e3f2fd; --header-row-2: #fff8e1; --header-row-3: #e0f7fa;
+            --success-bg: #e8f0fe; --warning-bg: #fff9c4; --danger-bg: #ffebee;
+        }
+        body { 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            line-height: 1.5; 
+            
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        
+        .navbar { 
+            background-color: white; 
+            border-bottom: 1px solid #eee; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            width: 100%;
+            padding: 12px 0;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+        }
+
+        .logo { 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .beta-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            background-color: #ffd600;
+            color: #000; 
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 5px;
+            font-weight: 900;
+            vertical-align: middle;
+            border: 1px solid #e6b800;
+            white-space: nowrap;
+        }
+        
+        /* [추가] 번역기 & 공유버튼 스타일 */
+        #google_translate_element { margin-left: auto; margin-right: 15px; }
+        
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { padding: 8px 18px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #ddd; background: #fff; transition: 0.2s; }
+        .nav-btn:hover { background: #f1f3f4; }
+        
+        .floating-share {
+            position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: var(--primary-color); color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+        }
+        .floating-share:hover { transform: scale(1.1); background: var(--primary-dark); }
+        
+        .hero-section { position: relative; width: 100%; height: 250px; background-color: #7f8c8d; background-image: url('header_bg.png'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 20px; }
+        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(0, 50, 150, 0.7), rgba(0, 0, 0, 0.5)); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; margin-top: 10px; }
+        .hero-content h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 800; text-shadow: 0 4px 15px rgba(0,0,0,0.5); letter-spacing: -1px; }
+        .hero-content p { font-size: 1rem; font-weight: 400; background: rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 30px; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+
+        .container { width: 95%; max-width: 1000px; background: #fff; border-radius: 20px; box-shadow: 0 -15px 40px rgba(0,0,0,0.15); padding: 40px; margin: -40px auto 50px; position: relative; z-index: 10; box-sizing: border-box; }
+        
+        .report-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .report-header h2 { font-size: 1.5rem; color: #333; margin: 0; border-left: 5px solid var(--primary-color); padding-left: 15px; }
+        .report-info { font-size: 0.95rem; color: #666; text-align: right; font-weight: 500; }
+
+        .input-summary-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 25px; margin-bottom: 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .summary-item { display: flex; flex-direction: column; gap: 6px; border-right: 1px solid #e0e0e0; padding-right: 15px; }
+        .summary-item:last-child { border-right: none; }
+        .summary-label { font-size: 0.9rem; color: #555; font-weight: 700; }
+        .summary-value { font-size: 1.1rem; color: #222; font-weight: 800; }
+        .sub-value { font-size: 0.85rem; color: #777; font-weight: 400; margin-left: 5px; }
+
+        .expert-summary { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 40px; }
+        .expert-summary h3 { font-size: 1.3rem; color: #2c3e50; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .summary-card { background-color: #f8f9fa; border-left: 5px solid #ccc; border-radius: 6px; padding: 20px; break-inside: avoid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-blue { border-left-color: var(--primary-color); background-color: var(--success-bg); }
+        .card-yellow { border-left-color: var(--warning-color); background-color: var(--warning-bg); }
+        .card-red { border-left-color: var(--danger-color); background-color: var(--danger-bg); }
+        
+        .case-badge { display: inline-block; color: #fff; font-size: 0.8rem; padding: 4px 10px; border-radius: 15px; font-weight: 800; margin-bottom: 10px; }
+        .badge-blue { background-color: var(--primary-color); }
+        .badge-yellow { background-color: var(--warning-color); color: #333 !important; }
+        .badge-red { background-color: var(--danger-color); }
+
+        .case-text { font-size: 0.95rem; color: #333; line-height: 1.6; word-break: keep-all; }
+        .text-highlight { font-weight: 800; color: #1565c0; }
+        .result-text { display: block; margin-top: 8px; font-size: 1.05rem; font-weight: 800; }
+        .msg-blue { color: var(--primary-color) !important; }
+        .msg-red { color: var(--danger-color) !important; }
+
+        .table-container { overflow-x: auto; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 30px; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 0.9rem; text-align: center; }
+        th, td { border: 1px solid #ddd; padding: 12px 8px; }
+        thead tr:nth-child(1) th { background-color: var(--header-row-1); color: #1565c0; font-weight: 800; }
+        thead tr:nth-child(2) th { background-color: var(--header-row-2); color: #e65100; font-weight: 700; }
+        thead tr:nth-child(3) th { background-color: var(--header-row-3); color: #006064; font-weight: 700; }
+        thead th:first-child { position: sticky; left: 0; z-index: 10; border-right: 2px solid #ccc; min-width: 70px; }
+        tbody th { background-color: #fafafa; font-weight: 600; position: sticky; left: 0; z-index: 5; border-right: 2px solid #ddd; }
+        .status-safe { background-color: var(--success-color); color: var(--success-text); font-weight: bold; }
+        .status-danger { background-color: var(--danger-color); color: var(--danger-text); font-weight: bold; }
+        .row-inheritance th, .row-inheritance td { background-color: #fff3e0; font-weight: bold; color: #333; border-top: 2px solid #ffb74d; }
+
+        .btn-area { display: none; justify-content: center; gap: 15px; margin-top: 40px; flex-wrap: wrap; }
+        .btn { padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 180px; }
+        .btn-retry { background-color: #f1f3f4; color: #333; border: 1px solid #ddd; }
+        .btn-save { background-color: #2e7d32; color: white; }
+        .btn-save:hover { background-color: #1b5e20; }
+
+        @media screen and (max-width: 768px) {
+            .nav-container { justify-content: center !important; text-align: center; gap: 8px; }
+            .logo { width: 100%; justify-content: center; margin-bottom: 5px; font-size: 1.1rem; }
+            .nav-links { width: 100%; justify-content: center; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .navbar { padding: 10px 0; padding-top: env(safe-area-inset-top); }
+            /* 모바일 번역기 위치 */
+            #google_translate_element { margin: 5px auto; }
+
+            .container { padding: 20px; margin-top: -30px; width: 98%; }
+            .hero-content h1 { font-size: 1.6rem; }
+            .hero-content p { font-size: 0.9rem; padding: 10px; }
+            .report-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .report-info { width: 100%; text-align: left; }
+            .input-summary-box { grid-template-columns: 1fr; gap: 15px; padding: 20px; }
+            .summary-item { border-right: none; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; padding-right: 0; }
+            .summary-item:last-child { border-bottom: none; padding-bottom: 0; }
+            .expert-summary { padding: 20px; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .btn-area { flex-direction: column; gap: 10px; }
+            .btn { width: 100%; max-width: none; }
+            table { min-width: auto; font-size: 0.75rem; }
+            th, td { padding: 4px 2px; word-break: break-all; }
+            thead th:first-child, tbody th { min-width: 40px; }
+            .floating-share { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+        }
+
+        @media print { .navbar, .btn-area { display: none !important; } .hero-section { height: 180px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                AI 노후 설계 연구서 <span class="beta-badge">무료베타버전</span>
+            </a>
+            <div id="google_translate_element"></div>
+            <div class="nav-links" id="nav-auth-area"></div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>AI 노후 준비 결과 리포트</h1>
+            <p>AI 데이터 분석을 통해 8가지 미래 시나리오를 예측했습니다.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="report-header">
+            <h2>시나리오별 노후 준비 상태</h2>
+            <div class="report-info">분석일: <span id="today-date"></span></div>
+        </div>
+        <div class="input-summary-box" id="input-summary"></div>
+        <div class="expert-summary">
+            <h3>📊 AI 종합 분석</h3>
+            <div class="summary-grid" id="summary-grid"></div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>구분</th><th colspan="4">경제활동 없음 (은퇴)</th><th colspan="4" id="labor-header">경제활동 지속</th></tr>
+                    <tr><th>거주지</th><th colspan="2">현 거주지 유지</th><th colspan="2">50% 자산유동화</th><th colspan="2">현 거주지 유지</th><th colspan="2">50% 자산유동화</th></tr>
+                    <tr><th>국민연금</th><th>정상</th><th>조기</th><th>정상</th><th>조기</th><th>정상</th><th>조기</th><th>정상</th><th>조기</th></tr>
+                </thead>
+                <tbody id="result-body"></tbody>
+                <tfoot id="result-footer"></tfoot>
+            </table>
+        </div>
+        
+        <div class="btn-area">
+            <button class="btn btn-retry" id="btn-retry">조건 수정하기</button>
+            <button class="btn btn-save" id="btn-save">💾 결과 저장하기</button>
+        </div>
+    </div>
+    
+    <div class="floating-share" onclick="shareResult()">
+        <i class="fas fa-share-alt"></i>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBJJshV9s_0wTNK_KM4moBC2qG_E8xErKo", 
+            authDomain: "www.myaicfo.co.kr", 
+            projectId: "nojunge-9ebbb", 
+            storageBucket: "nojunge-9ebbb.firebasestorage.app", 
+            messagingSenderId: "817970933502", 
+            appId: "1:817970933502:web:c1cebcaf10cdc681bb3faf" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const navArea = document.getElementById('nav-auth-area');
+            const btnArea = document.querySelector('.btn-area');
+            const viewMode = localStorage.getItem('simulationViewMode'); 
+
+            if (viewMode === 'readonly') {
+                if(btnArea) {
+                    btnArea.style.display = 'flex';
+                    btnArea.innerHTML = `<button class="btn btn-retry" onclick="location.href='retirement_simulator.html'">🔍 타인 조건 조회하기</button>`;
+                }
+            } else {
+                if(btnArea) btnArea.style.display = 'flex';
+            }
+
+            if (user) {
+                const now = Date.now();
+                const lastVisit = localStorage.getItem('last_visit_time');
+                const TEN_MINUTES = 10 * 60 * 1000;
+
+                if (!lastVisit || (now - lastVisit > TEN_MINUTES)) {
+                    signOut(auth).then(() => {
+                        localStorage.removeItem('last_visit_time');
+                        alert("세션이 만료되어 로그아웃되었습니다.");
+                        location.reload(); 
+                    });
+                    return;
+                }
+                localStorage.setItem('last_visit_time', now);
+
+                navArea.innerHTML = `<button class="nav-btn" onclick="location.href='mypage.html'">마이페이지</button><button class="nav-btn" id="btn-logout">로그아웃</button>`;
+                document.getElementById('btn-logout').onclick = () => {
+                    if(confirm("로그아웃 하시겠습니까?")) {
+                        signOut(auth).then(() => {
+                            localStorage.removeItem('last_visit_time');
+                            alert("로그아웃 되었습니다.");
+                            location.href='index.html';
+                        });
+                    }
+                };
+            } else {
+                navArea.innerHTML = `<button class="nav-btn btn-primary" onclick="location.href='login.html'">로그인</button>`;
+            }
+        });
+
+        const saveBtn = document.getElementById('btn-save');
+        if(saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                if (!currentUser) {
+                    if(confirm("결과를 저장하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = 'login.html?from=result';
+                    }
+                    return;
+                }
+                try {
+                    await addDoc(collection(db, "reports"), {
+                        uid: currentUser.uid, email: currentUser.email, created_at: serverTimestamp(),
+                        // 한국 시간(KST) 기준 날짜 저장 (9시간 더하기)
+date_str: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, '.'),
+                        input: window.simulationData, summary: window.simulationSummary || {}
+                    });
+                    alert("✅ 결과가 성공적으로 저장되었습니다!");
+                    window.location.href = 'mypage.html';
+                } catch (e) { alert("❌ 저장 실패: " + e.message); }
+            });
+        }
+
+        const retryBtn = document.getElementById('btn-retry');
+        if(retryBtn) {
+            retryBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    if(confirm("조건을 수정하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = 'login.html?from=result';
+                    }
+                    return;
+                }
+                window.location.href = 'retirement_simulator.html';
+            });
+        }
+    </script>
+
+    <script src="calculator.js"></script>
+
+    <script>
+        // ✅ 한국 시간(KST) 구하기: 현재 시간 + 9시간
+        const nowKST = new Date(Date.now() + 9 * 60 * 60 * 1000);
+        
+        const currentYear = nowKST.getFullYear();
+        document.getElementById('today-date').innerText = nowKST.toISOString().slice(0, 10).replace(/-/g, '.');
+
+        let data = {};
+        try { if(localStorage.getItem('simulationInput')) data = JSON.parse(localStorage.getItem('simulationInput')); } catch(e) {}
+        if (!data.h_year) data = { h_year: 1969, w_year: 1970, real_estate: 50000, cash_asset: 10000, retirement_living_cost: 300, retirement_job_income: 175 };
+        
+        window.simulationData = data; 
+        const getNum = (v) => { const n = Number(v); return isNaN(n) ? 0 : n; };
+        const fmt = (n) => Number(n).toLocaleString();
+        
+        const hAge = currentYear - getNum(data.h_year);
+        const wAge = currentYear - getNum(data.w_year);
+        const userJobIncome = getNum(data.retirement_job_income);
+        const inputEstate = getNum(data.real_estate); 
+        const inputCash = getNum(data.cash_asset);
+        const totalAsset = inputEstate + inputCash;
+        window.simulationSummary = { h_age: hAge, w_age: wAge, total_asset: totalAsset };
+
+        let housingLabel = "부동산";
+        if(data.housingType === 'jeonse') housingLabel = "전세보증금";
+        if(data.housingType === 'wolse') housingLabel = "월세보증금";
+
+        document.getElementById('input-summary').innerHTML = `
+            <div class="summary-item"><div class="summary-label">👤 인적 사항</div><div class="summary-value">남편 ${data.h_year}년생 (만 ${hAge}세)</div><div class="summary-value">아내 ${data.w_year}년생 (만 ${wAge}세)</div></div>
+            <div class="summary-item"><div class="summary-label">🏠 자산 현황</div><div class="summary-value">총 자산 ${fmt(totalAsset)}만원</div><div class="sub-value">${housingLabel} ${fmt(inputEstate)} / 현금 ${fmt(inputCash)}</div></div>
+            <div class="summary-item"><div class="summary-label">💰 노후 목표</div><div class="summary-value">월 생활비 ${fmt(data.retirement_living_cost)}만원</div></div>
+        `;
+        document.getElementById('labor-header').innerHTML = `경제활동 지속<br><span style="font-size:0.8em; font-weight:normal;">(${fmt(userJobIncome)}만원/월, 5년간 추가)</span>`;
+
+        let results = MyAICFO_Engine.runSimulation(data);
+
+        document.getElementById('result-body').innerHTML = Array.from({length: 26}, (_, i) => Math.min(60 + i, 85)).map((age, idx) => {
+            const displayAge = 60 + idx;
+            if(displayAge > 85) return ''; 
+            return `<tr><th>${displayAge}세</th>` + results.map(r => `<td class="${(r.status[displayAge]||'O') === 'O' ? 'status-safe' : 'status-danger'}">${r.status[displayAge]||'O'}</td>`).join('') + `</tr>`
+        }).join('');
+        
+        document.getElementById('result-footer').innerHTML = `<tr class="row-inheritance"><th>조기상속<br>가능여부</th>` + results.map(r => `<td>${r.isInheritanceSafe ? '가능' : '불가'}</td>`).join('') + `</tr>`;
+        
+        document.getElementById('summary-grid').innerHTML = results.map((r, idx) => `
+            <div class="summary-card ${r.isAllSafe ? 'card-blue' : (r.maxAge >= 85 || r.isInheritanceSafe ? 'card-yellow' : 'card-red')}">
+                <span class="case-badge ${r.isAllSafe ? 'badge-blue' : (r.maxAge >= 85 || r.isInheritanceSafe ? 'badge-yellow' : 'badge-red')}">CASE ${idx+1}</span>
+                <div class="case-text">
+                    연금 <span class="text-highlight">${r.config.pension === 'normal' ? '정상수령' : '조기수령'}</span>, <span class="text-highlight">${r.config.liquid ? '이사를 통해 현금화' : '현거주지 유지'}</span>, <span class="text-highlight">${r.config.labor ? '5년간 추가 경제활동' : '은퇴 후 여가생활'}</span>
+                    <span class="result-text ${r.isAllSafe ? 'msg-blue' : (r.isDanger ? 'msg-red' : '')}">👉 ${r.maxAge >= 85 ? '85세 이상' : r.maxAge + '세'}까지 통장에 현금 보유</span>
+                    <span class="result-text ${r.isAllSafe ? 'msg-blue' : (r.isDanger ? 'msg-red' : '')}">👉 60세 이후 조기상속 가능금액: ${r.finalAmount < 0 ? '없습니다.' : fmt(r.finalAmount) + '만원'}</span>
+                </div>
+            </div>
+        `).join('');
+    </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'ko', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        function shareResult() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI 노후설계 결과',
+                    text: '나의 노후 준비 상태는? AI가 분석한 시뮬레이션 결과를 확인해보세요.',
+                    url: window.location.href,
+                })
+                .then(() => console.log('공유 성공'))
+                .catch((error) => console.log('공유 실패', error));
+            } else {
+                var dummy   = document.createElement("input");
+                document.body.appendChild(dummy);
+                dummy.value = window.location.href;
+                dummy.select();
+                document.execCommand("copy");
+                document.body.removeChild(dummy);
+                alert("결과 링크가 복사되었습니다.");
+            }
+        }
+    </script>
+</body>
+</html>

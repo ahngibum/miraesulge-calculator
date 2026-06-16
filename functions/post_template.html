@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} | AI SEO Insight</title>
+    <meta name="description" content="{{DESCRIPTION}}">
+
+    <!-- Open Graph for SEO -->
+    <meta property="og:title" content="{{TITLE}}">
+    <meta property="og:description" content="{{DESCRIPTION}}">
+    <meta property="og:type" content="article">
+
+    <link rel="stylesheet" href="/board.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="/board.html" class="back-link">← 목록으로 돌아가기</a>
+
+        <article>
+            <header style="margin-bottom: 30px; border-bottom: 2px solid #f3f4f6; padding-bottom: 20px;">
+                <h1>{{TITLE}}</h1>
+                <div class="post-meta" style="margin-top: 10px;">
+                    {{DATE}}
+                </div>
+                <div class="post-tags">
+                    {{TAGS}}
+                </div>
+            </header>
+
+            <div class="post-content">
+                {{CONTENT}}
+            </div>
+        </article>
+    </div>
+
+</body>
+
+</html>
