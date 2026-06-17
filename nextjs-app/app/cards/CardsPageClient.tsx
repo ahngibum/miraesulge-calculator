@@ -11,7 +11,7 @@ export default function CardsPageClient() {
   const queryString = searchParams.toString();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-full bg-white flex flex-col">
       <div className="px-4 pt-8 pb-4">
         <p className="text-xs text-teal-600 font-medium mb-1">STEP 2</p>
         <h1 className="text-xl font-semibold text-gray-900 leading-snug">

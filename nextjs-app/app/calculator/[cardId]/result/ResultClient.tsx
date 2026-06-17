@@ -157,7 +157,7 @@ export default function ResultClient() {
 
   if (!result) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+      <div className="min-h-full bg-white flex flex-col items-center justify-center px-4">
         <div className="text-4xl mb-4">{card.emoji}</div>
         <h1 className="text-lg font-semibold text-gray-800 mb-2">{card.title}</h1>
         <div className="bg-teal-50 rounded-xl p-4 mb-6 text-sm text-teal-800">🤖 이 계산기는 곧 준비될 예정이에요!</div>
@@ -167,7 +167,7 @@ export default function ResultClient() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-full bg-white flex flex-col">
       <div className="px-4 pt-6 pb-2 flex items-center gap-2">
         <button onClick={() => router.back()} className="text-sm text-gray-400">← 뒤로</button>
       </div>

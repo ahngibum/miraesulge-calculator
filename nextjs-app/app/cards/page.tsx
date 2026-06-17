@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function CardsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-full bg-white" />}>
       <CardsPageClient />
     </Suspense>
   );

@@ -63,7 +63,7 @@ export default function Onboarding() {
   if (!currentQ) return null;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-full bg-white flex flex-col">
       <ProgressBar current={stepIndex + 1} total={total} />
 
       <div className="flex-1 flex flex-col pt-2 pb-8">

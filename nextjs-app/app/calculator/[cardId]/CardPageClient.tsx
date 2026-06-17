@@ -19,7 +19,7 @@ function CardPageInner({ card }: { card: RoadCard }) {
   }
 
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center px-4 py-10">
+    <main className="min-h-full bg-white flex flex-col items-center px-4 py-10">
       <div className="max-w-md w-full">
         <button onClick={() => router.push(hasOnboardingData ? `/cards?${queryString}` : '/onboarding')}
           className="text-sm text-teal-600 hover:underline mb-6 inline-block">
@@ -63,7 +63,7 @@ function CardPageInner({ card }: { card: RoadCard }) {
 
 export default function CardPageClient({ card }: { card: RoadCard }) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-full bg-white" />}>
       <CardPageInner card={card} />
     </Suspense>
   );

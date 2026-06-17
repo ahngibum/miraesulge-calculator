@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
+    <main className="min-h-full bg-white flex flex-col items-center justify-center px-6 py-16">
       <div className="max-w-md w-full text-center">
         <div className="text-5xl mb-6">🌱</div>
         <h1 className="text-3xl font-medium text-gray-800 mb-3 leading-tight">
