@@ -29,8 +29,8 @@ export default function RootLayout({
         <noscript>
           <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
         </noscript>
-        <div className="flex-1 flex justify-center bg-gray-100">
-          <div className="w-full max-w-[430px] bg-white shadow-sm">
+        <div className="page-outer">
+          <div className="page-inner">
             {children}
           </div>
         </div>
