@@ -43,7 +43,7 @@ export default function Onboarding() {
     } else {
       const params = new URLSearchParams();
       Object.entries(answers).forEach(([k, v]) => params.set(k, String(v)));
-      router.push(`/calculator/a-1?${params.toString()}`);
+      router.push(`/cards?${params.toString()}`);
     }
   }
 
@@ -56,7 +56,9 @@ export default function Onboarding() {
   }
 
   const currentAnswer = currentQ ? answers[currentQ.id] : undefined;
-  const canProceed = currentAnswer !== undefined && currentAnswer !== '';
+  const canProceed = currentQ?.type === 'range'
+    ? true
+    : currentAnswer !== undefined && currentAnswer !== '';
 
   if (!currentQ) return null;
 
