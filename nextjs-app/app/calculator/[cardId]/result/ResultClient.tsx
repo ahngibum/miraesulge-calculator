@@ -133,7 +133,8 @@ export default function ResultClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const cardId = params.cardId as string;
+  const rawCardId = params.cardId;
+  const cardId = Array.isArray(rawCardId) ? rawCardId[0] : (rawCardId ?? '');
   const card = ROAD_A_CARDS.find(c => c.id === cardId);
 
   const baseInputs = useMemo(() => parseInputs(searchParams), [searchParams]);
